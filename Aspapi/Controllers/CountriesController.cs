@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WorldCities;
 
 namespace Aspapi.Controllers {
@@ -15,6 +16,7 @@ namespace Aspapi.Controllers {
 
         // GET: api/<CountriesController>
         [HttpGet]
+        [Authorize]
         public IEnumerable<Country> Get()
         {
             return _db.Countries.ToList();
