@@ -62,13 +62,13 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new()
     {
         RequireExpirationTime = true,
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = builder.Configuration["JwtSettings.Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings.Audience"],
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
             builder.Configuration["JwtSettings:SecurityKey"] ?? throw new InvalidOperationException()))
     };
