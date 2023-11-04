@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Aspapi.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WorldCities;
 
@@ -20,6 +21,34 @@ namespace Aspapi.Controllers {
         public IEnumerable<Country> Get()
         {
             return _db.Countries.ToList();
+        }
+
+        // LINQ statement to get country info including population
+        [HttpGet("Population/{id}")]
+        public CountryPopulation? GetPopulation(int id) {
+            /*
+             * SELECT ID, NAME, COUNT(City.POPULATION)
+             * FROM Countries
+             * WHERE Countries.ID = ID
+             */
+            return
+                /*
+                 _db.Countries.Where(c => c.Id == id)
+                        .Select(c => new CountryPopulation()
+                        {
+                            Id = c.Id,
+                            Name = c.Name,
+                            Population = c.Cities.Sum(t => t.Population)
+                        }).SingleOrDefault();
+                */
+                (from country in _db.Countries
+                    where country.Id == id
+                    select new CountryPopulation()
+                    {
+                        Id = country.Id,
+                        Name = country.Name,
+                        Population = country.Cities.Sum(t => t.Population)
+                    }).SingleOrDefault();
         }
 
         // GET api/<CountriesController>/5

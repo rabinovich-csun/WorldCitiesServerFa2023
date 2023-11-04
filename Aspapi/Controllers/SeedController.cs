@@ -83,5 +83,44 @@ namespace Aspapi.Controllers {
             return new JsonResult(countriesByName.Count);
 
         }
+
+        [HttpPost("Cities")]
+        public async Task<IActionResult> ImportCities() {
+            Dictionary<string, Country> countries = await _db.Countries//.AsNoTracking()
+                .ToDictionaryAsync(c => c.Name);
+
+            CsvConfiguration config = new(CultureInfo.InvariantCulture) {
+                HasHeaderRecord = true,
+                HeaderValidated = null
+            };
+            int cityCount = 0;
+            using (StreamReader reader = new(_pathName))
+            using (CsvReader csv = new(reader, config)) {
+                IEnumerable<WorldCitiesCsv>? records = csv.GetRecords<WorldCitiesCsv>();
+                foreach (WorldCitiesCsv record in records) {
+                    if (!countries.ContainsKey(record.country)) {
+                        Console.WriteLine($"Not found country for {record.city}");
+                        return NotFound(record);
+                    }
+
+                    if (!record.population.HasValue || string.IsNullOrEmpty(record.city_ascii)) {
+                        Console.WriteLine($"Skipping {record.city}");
+                        continue;
+                    }
+                    City city = new() {
+                        Name = record.city,
+                        Lat = record.lat,
+                        Lon = record.lng,
+                        Population = (int)record.population.Value,
+                        CountryId = countries[record.country].Id
+                    };
+                    _db.Cities.Add(city);
+                    cityCount++;
+                }
+                await _db.SaveChangesAsync();
+            }
+            return new JsonResult(cityCount);
+        }
+
     }
 }
