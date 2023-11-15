@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Aspapi/bin/Release/net7.0
+/Aspapi/appsettings.Production.json
+/worldcities.sql
